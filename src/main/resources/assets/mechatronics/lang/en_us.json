@@ -1,0 +1,13 @@
+{
+  "itemGroup.mechatronics": "Example Mod Tab",
+  "block.mechatronics.example_block": "Example Block",
+  "item.mechatronics.example_item": "Example Item",
+
+  "mechatronics.configuration.title": "Mechatronics Configs",
+  "mechatronics.configuration.section.mechatronics.common.toml": "Mechatronics Configs",
+  "mechatronics.configuration.section.mechatronics.common.toml.title": "Mechatronics Configs",
+  "mechatronics.configuration.items": "Item List",
+  "mechatronics.configuration.logDirtBlock": "Log Dirt Block",
+  "mechatronics.configuration.magicNumberIntroduction": "Magic Number Text",
+  "mechatronics.configuration.magicNumber": "Magic Number"
+}
