@@ -1,5 +1,6 @@
 package com.gamer.mechatronics;
 
+import com.gamer.mechatronics.block.BreadboardBlock;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
@@ -31,6 +32,7 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
+
 // The value here should match an entry in the META-INF/neoforge.mods.toml file
 @Mod(Mechatronics.MODID)
 public class Mechatronics {
@@ -50,17 +52,33 @@ public class Mechatronics {
     // Creates a new BlockItem with the id "mechatronics:example_block", combining the namespace and path
     public static final DeferredItem<BlockItem> EXAMPLE_BLOCK_ITEM = ITEMS.registerSimpleBlockItem("example_block", EXAMPLE_BLOCK);
 
-    // Creates a new food item with the id "mechatronics:example_id", nutrition 1 and saturation 2
-    public static final DeferredItem<Item> EXAMPLE_ITEM = ITEMS.registerSimpleItem("example_item", p -> p.food(new FoodProperties.Builder()
-            .alwaysEdible().nutrition(1).saturationModifier(2f).build()));
+
+    /*
+    * The above is the template information, the direct section bellow is where the items are now being declared.
+    *
+    */
+
+    // Items
+    public static final DeferredItem<Item> COPPER_WIRE = ITEMS.registerSimpleItem("copper_wire");
+    public static final DeferredItem<Item> RESISTOR =ITEMS.registerSimpleItem("resistor");
+
+    //Blocks
+    //bread board
+    public static final DeferredBlock<BreadboardBlock> BREADBOARD = BLOCKS.registerBlock(
+            "breadboard",
+            BreadboardBlock::new,
+            p -> p.mapColor(MapColor.WOOD).strength(0.5f).noOcclusion());
+    public static final DeferredItem<BlockItem> BREADBOARD_ITEM = ITEMS.registerSimpleBlockItem("breadboard", BREADBOARD);
+    //
 
     // Creates a creative tab with the id "mechatronics:example_tab" for the example item, that is placed after the combat tab
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> EXAMPLE_TAB = CREATIVE_MODE_TABS.register("example_tab", () -> CreativeModeTab.builder()
             .title(Component.translatable("itemGroup.mechatronics")) //The language key for the title of your CreativeModeTab
             .withTabsBefore(CreativeModeTabs.COMBAT)
-            .icon(() -> EXAMPLE_ITEM.get().getDefaultInstance())
             .displayItems((parameters, output) -> {
-                output.accept(EXAMPLE_ITEM.get());// Add the example item to the tab. For your own tabs, this method is preferred over the event
+                output.accept(COPPER_WIRE.get()); // Adds in the copper wire to creative
+                output.accept(RESISTOR.get()); // Adds in the Resistor to creative
+                output.accept(BREADBOARD_ITEM.get());//adds in the bread board
             }).build());
 
     // The constructor for the mod class is the first code that is run when your mod is loaded.

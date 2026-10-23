@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": ["WCW"],
+  "key": {
+    "C": "minecraft:clay_ball",
+    "W": "mechatronics:copper_wire"
+  },
+  "result": {
+    "id": "mechatronics:resistor",
+    "count": 3
+  }
+}

@@ -1,7 +1,14 @@
 {
   "itemGroup.mechatronics": "Example Mod Tab",
   "block.mechatronics.example_block": "Example Block",
-  "item.mechatronics.example_item": "Example Item",
+
+
+  "item.mechatronics.copper_wire": "Copper Wire",
+  "item.mechatronics.resistor" : "Resistor",
+
+
+  "block.mechatronics.breadboard": "Breadboard",
+
 
   "mechatronics.configuration.title": "Mechatronics Configs",
   "mechatronics.configuration.section.mechatronics.common.toml": "Mechatronics Configs",
@@ -10,4 +17,5 @@
   "mechatronics.configuration.logDirtBlock": "Log Dirt Block",
   "mechatronics.configuration.magicNumberIntroduction": "Magic Number Text",
   "mechatronics.configuration.magicNumber": "Magic Number"
+
 }
