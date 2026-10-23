@@ -6,6 +6,23 @@
   "item.mechatronics.copper_wire": "Copper Wire",
   "item.mechatronics.resistor" : "Resistor",
 
+  "item.mechatronics.white_led": "White LED",
+  "item.mechatronics.orange_led": "Orange LED",
+  "item.mechatronics.magenta_led": "Magenta LED",
+  "item.mechatronics.light_blue_led": "Light Blue LED",
+  "item.mechatronics.yellow_led": "Yellow LED",
+  "item.mechatronics.lime_led": "Lime LED",
+  "item.mechatronics.pink_led": "Pink LED",
+  "item.mechatronics.gray_led": "Gray LED",
+  "item.mechatronics.light_gray_led": "Light Gray LED",
+  "item.mechatronics.cyan_led": "Cyan LED",
+  "item.mechatronics.purple_led": "Purple LED",
+  "item.mechatronics.blue_led": "Blue LED",
+  "item.mechatronics.brown_led": "Brown LED",
+  "item.mechatronics.green_led": "Green LED",
+  "item.mechatronics.red_led": "Red LED",
+  "item.mechatronics.black_led": "Black LED",
+
 
   "block.mechatronics.breadboard": "Breadboard",
 

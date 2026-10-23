@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "mechatronics:item/led_bulb",
+    "layer1": "mechatronics:item/led_legs"
+  }
+}

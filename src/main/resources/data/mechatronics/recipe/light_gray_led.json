@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "redstone",
+  "ingredients": [
+    "minecraft:light_gray_stained_glass_pane",
+    "mechatronics:copper_wire",
+    "minecraft:redstone"
+  ],
+  "result": {
+    "id": "mechatronics:light_gray_led",
+    "count": 1
+  }
+}

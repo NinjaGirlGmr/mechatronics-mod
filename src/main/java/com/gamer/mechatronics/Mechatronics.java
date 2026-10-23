@@ -1,6 +1,8 @@
 package com.gamer.mechatronics;
 
-import com.gamer.mechatronics.block.BreadboardBlock;
+import com.gamer.mechatronics.block.*;
+import com.gamer.mechatronics.item.LedItem;
+import net.minecraft.world.item.*;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
@@ -9,10 +11,6 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.food.FoodProperties;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.CreativeModeTabs;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -31,6 +29,9 @@ import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
+
+import java.util.EnumMap;
+import java.util.Map;
 
 
 // The value here should match an entry in the META-INF/neoforge.mods.toml file
@@ -62,6 +63,26 @@ public class Mechatronics {
     public static final DeferredItem<Item> COPPER_WIRE = ITEMS.registerSimpleItem("copper_wire");
     public static final DeferredItem<Item> RESISTOR =ITEMS.registerSimpleItem("resistor");
 
+        //Led Color Items
+    public static final Map<DyeColor, DeferredItem<LedItem>> LEDS = new EnumMap<>(DyeColor.class);
+    static {
+        for (DyeColor color : DyeColor.values()) {
+            LEDS.put(color, ITEMS.registerItem(color.getName() + "_led",
+                    p -> new LedItem(p, ledVoltage(color))));
+        }
+    }
+
+    // Roughly real forward voltages: red needs the least, blue and white the most
+    private static double ledVoltage(DyeColor color) {
+        return switch (color) {
+            case RED, BROWN -> 1.8;
+            case ORANGE -> 2.0;
+            case YELLOW, LIME -> 2.1;
+            case GREEN -> 2.2;
+            default -> 3.0;
+        };
+    }
+
     //Blocks
     //bread board
     public static final DeferredBlock<BreadboardBlock> BREADBOARD = BLOCKS.registerBlock(
@@ -79,6 +100,7 @@ public class Mechatronics {
                 output.accept(COPPER_WIRE.get()); // Adds in the copper wire to creative
                 output.accept(RESISTOR.get()); // Adds in the Resistor to creative
                 output.accept(BREADBOARD_ITEM.get());//adds in the bread board
+                LEDS.values().forEach(led -> output.accept(led.get())); // add multicolor leds
             }).build());
 
     // The constructor for the mod class is the first code that is run when your mod is loaded.
