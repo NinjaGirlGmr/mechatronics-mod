@@ -4,6 +4,7 @@ import com.gamer.mechatronics.block.*;
 import com.gamer.mechatronics.item.LedItem;
 import com.gamer.mechatronics.item.SwitchItem;
 import net.minecraft.world.item.*;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
@@ -33,6 +34,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
 
 // The value here should match an entry in the META-INF/neoforge.mods.toml file
@@ -96,6 +98,16 @@ public class Mechatronics {
     public static final DeferredItem<BlockItem> BREADBOARD_ITEM = ITEMS.registerSimpleBlockItem("breadboard", BREADBOARD);
     //
 
+    // bread board entity
+    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES =
+            DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, MODID);
+    // bread board entity supplier
+    public static final Supplier<BlockEntityType<BreadboardBlockEntity>> BREADBOARD_BE =
+            BLOCK_ENTITY_TYPES.register("breadboard", () -> new BlockEntityType<>(
+                    BreadboardBlockEntity::new,
+                    false,
+                    BREADBOARD.get()));
+
     // Creates a creative tab with the id "mechatronics:example_tab" for the example item, that is placed after the combat tab
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> MECHATRONICS_TAB = CREATIVE_MODE_TABS.register("example_tab", () -> CreativeModeTab.builder()
             .title(Component.translatable("itemGroup.mechatronics")) //Name of tab
@@ -121,6 +133,9 @@ public class Mechatronics {
         ITEMS.register(modEventBus);
         // Register the Deferred Register to the mod event bus so tabs get registered
         CREATIVE_MODE_TABS.register(modEventBus);
+
+        // bread board ui interegration
+        BLOCK_ENTITY_TYPES.register(modEventBus);
 
         // Register ourselves for server and other game events we are interested in.
         // Note that this is necessary if and only if we want *this* class (Mechatronics) to respond directly to events.
