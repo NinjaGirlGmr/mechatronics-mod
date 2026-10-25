@@ -2,6 +2,7 @@ package com.gamer.mechatronics;
 
 import com.gamer.mechatronics.block.*;
 import com.gamer.mechatronics.item.LedItem;
+import com.gamer.mechatronics.item.SwitchItem;
 import net.minecraft.world.item.*;
 import org.slf4j.Logger;
 
@@ -62,8 +63,10 @@ public class Mechatronics {
     // Items
     public static final DeferredItem<Item> COPPER_WIRE = ITEMS.registerSimpleItem("copper_wire");
     public static final DeferredItem<Item> RESISTOR =ITEMS.registerSimpleItem("resistor");
+    public static final DeferredItem<SwitchItem> TOGGLE_SWITCH = ITEMS.registerItem("toggle_switch", SwitchItem::new);
 
-        //Led Color Items
+
+    //Led Color Items
     public static final Map<DyeColor, DeferredItem<LedItem>> LEDS = new EnumMap<>(DyeColor.class);
     static {
         for (DyeColor color : DyeColor.values()) {
@@ -84,23 +87,26 @@ public class Mechatronics {
     }
 
     //Blocks
-    //bread board
+    //bread board (physical)
     public static final DeferredBlock<BreadboardBlock> BREADBOARD = BLOCKS.registerBlock(
             "breadboard",
             BreadboardBlock::new,
             p -> p.mapColor(MapColor.WOOD).strength(0.5f).noOcclusion());
+    //item in inventory
     public static final DeferredItem<BlockItem> BREADBOARD_ITEM = ITEMS.registerSimpleBlockItem("breadboard", BREADBOARD);
     //
 
     // Creates a creative tab with the id "mechatronics:example_tab" for the example item, that is placed after the combat tab
-    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> EXAMPLE_TAB = CREATIVE_MODE_TABS.register("example_tab", () -> CreativeModeTab.builder()
-            .title(Component.translatable("itemGroup.mechatronics")) //The language key for the title of your CreativeModeTab
+    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> MECHATRONICS_TAB = CREATIVE_MODE_TABS.register("example_tab", () -> CreativeModeTab.builder()
+            .title(Component.translatable("itemGroup.mechatronics")) //Name of tab
             .withTabsBefore(CreativeModeTabs.COMBAT)
+            .icon(() -> BREADBOARD_ITEM.get().getDefaultInstance())
             .displayItems((parameters, output) -> {
                 output.accept(COPPER_WIRE.get()); // Adds in the copper wire to creative
                 output.accept(RESISTOR.get()); // Adds in the Resistor to creative
                 output.accept(BREADBOARD_ITEM.get());//adds in the bread board
                 LEDS.values().forEach(led -> output.accept(led.get())); // add multicolor leds
+                output.accept(TOGGLE_SWITCH.get());// gets toggle switch for circuits.
             }).build());
 
     // The constructor for the mod class is the first code that is run when your mod is loaded.

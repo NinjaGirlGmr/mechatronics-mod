@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "redstone",
+  "ingredients": [
+    "minecraft:lever",
+    "mechatronics:copper_wire"
+  ],
+  "result": {
+    "id": "mechatronics:toggle_switch",
+    "count": 1
+  }
+}

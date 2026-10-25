@@ -2,6 +2,7 @@ package com.gamer.mechatronics.client;
 
 import com.gamer.mechatronics.Mechatronics;
 import com.gamer.mechatronics.item.LedItem;
+import com.gamer.mechatronics.item.SwitchItem;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.neoforged.api.distmarker.Dist;
@@ -20,6 +21,13 @@ public class TooltipHandler {
             event.getToolTip().add(Component.literal("Forward voltage: " + led.getForwardVoltage() + " V")
                     .withStyle(ChatFormatting.GRAY));
             event.getToolTip().add(Component.literal("Max current: " + LedItem.MAX_CURRENT_MA + " mA")
+                    .withStyle(ChatFormatting.GRAY));
+        }
+        if (event.getItemStack().getItem() instanceof SwitchItem) {
+            event.getToolTip().add(Component.literal("Type: SPST toggle")
+                    .withStyle(ChatFormatting.GRAY));
+            event.getToolTip().add(Component.literal("Rated: " + SwitchItem.MAX_VOLTAGE + " V, "
+                            + SwitchItem.MAX_CURRENT_MA + " mA")
                     .withStyle(ChatFormatting.GRAY));
         }
     }

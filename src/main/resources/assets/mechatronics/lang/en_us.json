@@ -1,10 +1,11 @@
 {
-  "itemGroup.mechatronics": "Example Mod Tab",
+  "itemGroup.mechatronics": "Mechatronics",
   "block.mechatronics.example_block": "Example Block",
 
 
   "item.mechatronics.copper_wire": "Copper Wire",
   "item.mechatronics.resistor" : "Resistor",
+  "item.mechatronics.toggle_switch" : "Toggle Switch",
 
   "item.mechatronics.white_led": "White LED",
   "item.mechatronics.orange_led": "Orange LED",
@@ -22,6 +23,7 @@
   "item.mechatronics.green_led": "Green LED",
   "item.mechatronics.red_led": "Red LED",
   "item.mechatronics.black_led": "Black LED",
+
 
 
   "block.mechatronics.breadboard": "Breadboard",
