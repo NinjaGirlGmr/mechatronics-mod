@@ -1,10 +1,12 @@
 package com.gamer.mechatronics.client;
 
 import com.gamer.mechatronics.Mechatronics;
+import com.gamer.mechatronics.block.BreadboardBlock;
 import com.gamer.mechatronics.item.LedItem;
 import com.gamer.mechatronics.item.SwitchItem;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.BlockItem;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -29,6 +31,16 @@ public class TooltipHandler {
             event.getToolTip().add(Component.literal("Rated: " + SwitchItem.MAX_VOLTAGE + " V, "
                             + SwitchItem.MAX_CURRENT_MA + " mA")
                     .withStyle(ChatFormatting.GRAY));
+        }
+        if (event.getItemStack().getItem() instanceof BlockItem blockItem
+                && blockItem.getBlock() instanceof BreadboardBlock board) {
+            int columns = board.getColumns();
+            event.getToolTip().add(Component.literal("Columns: " + columns)
+                    .withStyle(ChatFormatting.GRAY));
+            event.getToolTip().add(Component.literal("Tie points: " + columns * 14)
+                    .withStyle(ChatFormatting.GRAY));
+            event.getToolTip().add(Component.literal("Combining boards clears circuits")
+                    .withStyle(ChatFormatting.DARK_GRAY));
         }
     }
 }

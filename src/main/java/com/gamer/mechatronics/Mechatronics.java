@@ -8,6 +8,7 @@ import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
@@ -72,10 +73,21 @@ public class Mechatronics {
     // helps set up screen display for bread board
     public static final DeferredRegister<MenuType<?>> MENUS = DeferredRegister.create(Registries.MENU, MODID);
     //bread board (physical)
-    public static final DeferredBlock<BreadboardBlock> BREADBOARD = BLOCKS.registerBlock("breadboard", BreadboardBlock::new, p -> p.mapColor(MapColor.WOOD).strength(0.5f).noOcclusion());
-    //item in inventory
-    public static final DeferredItem<BlockItem> BREADBOARD_ITEM = ITEMS.registerSimpleBlockItem("breadboard", BREADBOARD);
+    // bread board sizes as blocks
+    public static final DeferredBlock<BreadboardBlock> SMALL_BREADBOARD = registerBreadboard("small_breadboard", 15);
+    public static final DeferredBlock<BreadboardBlock> MEDIUM_BREADBOARD = registerBreadboard("medium_breadboard", 30);
+    public static final DeferredBlock<BreadboardBlock> LARGE_BREADBOARD = registerBreadboard("large_breadboard", 60);
+    // bread board sizes as items
+    public static final DeferredItem<BlockItem> SMALL_BREADBOARD_ITEM = ITEMS.registerSimpleBlockItem("small_breadboard", SMALL_BREADBOARD);
+    public static final DeferredItem<BlockItem> MEDIUM_BREADBOARD_ITEM = ITEMS.registerSimpleBlockItem("medium_breadboard", MEDIUM_BREADBOARD);
+    public static final DeferredItem<BlockItem> LARGE_BREADBOARD_ITEM = ITEMS.registerSimpleBlockItem("large_breadboard", LARGE_BREADBOARD);
 
+    // All breadboards share the same properties; only the column count differs
+    private static DeferredBlock<BreadboardBlock> registerBreadboard(String name, int columns) {
+        return BLOCKS.registerBlock(name,
+                p -> new BreadboardBlock(p, columns),
+                p -> p.mapColor(MapColor.WOOD).strength(0.5f).noOcclusion());
+    }
 
     // bread board entity
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES =
@@ -103,9 +115,10 @@ public class Mechatronics {
 
     //BREAD BOARD NIGHTMARE
     // bread board entity supplier
-    public static final Supplier<BlockEntityType<BreadboardBlockEntity>> BREADBOARD_BE = BLOCK_ENTITY_TYPES.register("breadboard", () -> new BlockEntityType<>(BreadboardBlockEntity::new, false, BREADBOARD.get()));
+    public static final Supplier<BlockEntityType<BreadboardBlockEntity>> BREADBOARD_BE = BLOCK_ENTITY_TYPES.register("breadboard", () -> new BlockEntityType<>(BreadboardBlockEntity::new, false, SMALL_BREADBOARD.get(), MEDIUM_BREADBOARD.get(), LARGE_BREADBOARD.get()));
     // sets up the screen for bread board entity menu
-    public static final Supplier<MenuType<BreadboardMenu>> BREADBOARD_MENU = MENUS.register("breadboard", () -> new MenuType<>(BreadboardMenu::new, FeatureFlags.DEFAULT_FLAGS));
+    public static final Supplier<MenuType<BreadboardMenu>> BREADBOARD_MENU =
+            MENUS.register("breadboard", () -> IMenuTypeExtension.create(BreadboardMenu::new));
 
 
     //CREATIVE
@@ -113,11 +126,13 @@ public class Mechatronics {
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> MECHATRONICS_TAB = CREATIVE_MODE_TABS.register("example_tab", () -> CreativeModeTab.builder()
             .title(Component.translatable("itemGroup.mechatronics")) //Name of tab
             .withTabsBefore(CreativeModeTabs.COMBAT)
-            .icon(() -> BREADBOARD_ITEM.get().getDefaultInstance())
+            .icon(() -> SMALL_BREADBOARD_ITEM.get().getDefaultInstance())
             .displayItems((parameters, output) -> {
                 output.accept(COPPER_WIRE.get()); // Adds in the copper wire to creative
                 output.accept(RESISTOR.get()); // Adds in the Resistor to creative
-                output.accept(BREADBOARD_ITEM.get());//adds in the bread board
+                output.accept(SMALL_BREADBOARD_ITEM.get());  // breadboard (small)
+                output.accept(MEDIUM_BREADBOARD_ITEM.get()); // breadboard (medium)
+                output.accept(LARGE_BREADBOARD_ITEM.get());  // breadboard (large)
                 LEDS.values().forEach(led -> output.accept(led.get())); // add multicolor leds
                 output.accept(TOGGLE_SWITCH.get());// gets toggle switch for circuits.
             }).build());

@@ -22,9 +22,15 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 public class BreadboardBlock extends Block implements EntityBlock {
     // A box from (0,0,0) to (16,2,16) in pixels: full width, 2 pixels tall
     private static final VoxelShape SHAPE = Block.box(0, 0, 0, 16, 2, 16);
+    // allows expandability
+    private final int columns;
 
-    public BreadboardBlock(Properties properties) {
+    public BreadboardBlock(Properties properties, int columns) {
         super(properties);
+        this.columns = columns;
+    }
+    public int getColumns() {
+        return columns;
     }
 
     @Override
@@ -40,8 +46,10 @@ public class BreadboardBlock extends Block implements EntityBlock {
                                                Player player, BlockHitResult hit) {
         if (!level.isClientSide() && player instanceof ServerPlayer serverPlayer) {
             serverPlayer.openMenu(new SimpleMenuProvider(
-                    (id, inventory, p) -> new BreadboardMenu(id, inventory, ContainerLevelAccess.create(level, pos)),
-                    Component.translatable("container.mechatronics.breadboard")));
+                            (id, inventory, p) -> new BreadboardMenu(id, inventory,
+                                    ContainerLevelAccess.create(level, pos), columns),
+                            this.getName()),
+                    buf -> buf.writeVarInt(columns));
         }
         return InteractionResult.SUCCESS;
     }

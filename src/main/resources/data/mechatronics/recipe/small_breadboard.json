@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "pattern": [
+    "DWD",
+    "PPP"
+  ],
+  "key": {
+    "D": "minecraft:white_dye",
+    "W": "mechatronics:copper_wire",
+    "P": "#minecraft:planks"
+  },
+  "result": {
+    "id": "mechatronics:small_breadboard",
+    "count": 1
+  }
+}

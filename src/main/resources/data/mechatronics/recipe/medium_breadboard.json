@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "redstone",
+  "ingredients": [
+    "mechatronics:small_breadboard",
+    "mechatronics:small_breadboard"
+  ],
+  "result": {
+    "id": "mechatronics:medium_breadboard",
+    "count": 1
+  }
+}

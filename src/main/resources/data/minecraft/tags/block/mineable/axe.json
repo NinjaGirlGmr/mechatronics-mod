@@ -1,4 +1,8 @@
 {
   "replace": false,
-  "values": ["mechatronics:breadboard"]
+  "values": [
+    "mechatronics:small_breadboard",
+    "mechatronics:medium_breadboard",
+    "mechatronics:large_breadboard"
+  ]
 }

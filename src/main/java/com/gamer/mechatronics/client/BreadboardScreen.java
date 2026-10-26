@@ -26,5 +26,6 @@ public class BreadboardScreen extends AbstractContainerScreen<BreadboardMenu> {
     @Override
     protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         graphics.text(this.font, this.title, this.titleLabelX, this.titleLabelY, 0xFF404040, false);
+        graphics.text(this.font, Component.literal(menu.getColumns() + " columns"), 8, 20, 0xFF404040, false);
     }
 }

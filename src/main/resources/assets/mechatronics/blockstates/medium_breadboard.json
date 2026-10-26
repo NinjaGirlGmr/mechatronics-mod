@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "mechatronics:block/breadboard"
+    }
+  }
+}
