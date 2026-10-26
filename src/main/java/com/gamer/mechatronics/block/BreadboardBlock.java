@@ -1,9 +1,13 @@
 package com.gamer.mechatronics.block;
 
+import com.gamer.mechatronics.menu.BreadboardMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -34,10 +38,10 @@ public class BreadboardBlock extends Block implements EntityBlock {
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos,
                                                Player player, BlockHitResult hit) {
-        // Only the server changes data; the client just displays it
-        if (!level.isClientSide() && level.getBlockEntity(pos) instanceof BreadboardBlockEntity board) {
-            int clicks = board.addClick();
-            player.sendOverlayMessage(Component.literal("Breadboard clicked " + clicks + " times"));
+        if (!level.isClientSide() && player instanceof ServerPlayer serverPlayer) {
+            serverPlayer.openMenu(new SimpleMenuProvider(
+                    (id, inventory, p) -> new BreadboardMenu(id, inventory, ContainerLevelAccess.create(level, pos)),
+                    Component.translatable("container.mechatronics.breadboard")));
         }
         return InteractionResult.SUCCESS;
     }

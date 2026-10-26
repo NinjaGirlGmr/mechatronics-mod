@@ -27,7 +27,7 @@
 
 
   "block.mechatronics.breadboard": "Breadboard",
-
+  "container.mechatronics.breadboard": "Breadboard",
 
   "mechatronics.configuration.title": "Mechatronics Configs",
   "mechatronics.configuration.section.mechatronics.common.toml": "Mechatronics Configs",

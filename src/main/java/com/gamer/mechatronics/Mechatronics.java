@@ -3,6 +3,9 @@ package com.gamer.mechatronics;
 import com.gamer.mechatronics.block.*;
 import com.gamer.mechatronics.item.LedItem;
 import com.gamer.mechatronics.item.SwitchItem;
+import com.gamer.mechatronics.menu.BreadboardMenu;
+import net.minecraft.world.flag.FeatureFlags;
+import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import org.slf4j.Logger;
@@ -62,11 +65,21 @@ public class Mechatronics {
     *
     */
 
-    // Items
+    // Deffered Register
     public static final DeferredItem<Item> COPPER_WIRE = ITEMS.registerSimpleItem("copper_wire");
     public static final DeferredItem<Item> RESISTOR =ITEMS.registerSimpleItem("resistor");
     public static final DeferredItem<SwitchItem> TOGGLE_SWITCH = ITEMS.registerItem("toggle_switch", SwitchItem::new);
+    // helps set up screen display for bread board
+    public static final DeferredRegister<MenuType<?>> MENUS = DeferredRegister.create(Registries.MENU, MODID);
+    //bread board (physical)
+    public static final DeferredBlock<BreadboardBlock> BREADBOARD = BLOCKS.registerBlock("breadboard", BreadboardBlock::new, p -> p.mapColor(MapColor.WOOD).strength(0.5f).noOcclusion());
+    //item in inventory
+    public static final DeferredItem<BlockItem> BREADBOARD_ITEM = ITEMS.registerSimpleBlockItem("breadboard", BREADBOARD);
 
+
+    // bread board entity
+    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES =
+            DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, MODID);
 
     //Led Color Items
     public static final Map<DyeColor, DeferredItem<LedItem>> LEDS = new EnumMap<>(DyeColor.class);
@@ -88,26 +101,14 @@ public class Mechatronics {
         };
     }
 
-    //Blocks
-    //bread board (physical)
-    public static final DeferredBlock<BreadboardBlock> BREADBOARD = BLOCKS.registerBlock(
-            "breadboard",
-            BreadboardBlock::new,
-            p -> p.mapColor(MapColor.WOOD).strength(0.5f).noOcclusion());
-    //item in inventory
-    public static final DeferredItem<BlockItem> BREADBOARD_ITEM = ITEMS.registerSimpleBlockItem("breadboard", BREADBOARD);
-    //
-
-    // bread board entity
-    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES =
-            DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, MODID);
+    //BREAD BOARD NIGHTMARE
     // bread board entity supplier
-    public static final Supplier<BlockEntityType<BreadboardBlockEntity>> BREADBOARD_BE =
-            BLOCK_ENTITY_TYPES.register("breadboard", () -> new BlockEntityType<>(
-                    BreadboardBlockEntity::new,
-                    false,
-                    BREADBOARD.get()));
+    public static final Supplier<BlockEntityType<BreadboardBlockEntity>> BREADBOARD_BE = BLOCK_ENTITY_TYPES.register("breadboard", () -> new BlockEntityType<>(BreadboardBlockEntity::new, false, BREADBOARD.get()));
+    // sets up the screen for bread board entity menu
+    public static final Supplier<MenuType<BreadboardMenu>> BREADBOARD_MENU = MENUS.register("breadboard", () -> new MenuType<>(BreadboardMenu::new, FeatureFlags.DEFAULT_FLAGS));
 
+
+    //CREATIVE
     // Creates a creative tab with the id "mechatronics:example_tab" for the example item, that is placed after the combat tab
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> MECHATRONICS_TAB = CREATIVE_MODE_TABS.register("example_tab", () -> CreativeModeTab.builder()
             .title(Component.translatable("itemGroup.mechatronics")) //Name of tab
@@ -136,6 +137,7 @@ public class Mechatronics {
 
         // bread board ui interegration
         BLOCK_ENTITY_TYPES.register(modEventBus);
+        MENUS.register(modEventBus);
 
         // Register ourselves for server and other game events we are interested in.
         // Note that this is necessary if and only if we want *this* class (Mechatronics) to respond directly to events.
