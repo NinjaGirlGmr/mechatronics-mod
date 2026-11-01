@@ -24,13 +24,26 @@ public class BreadboardBlock extends Block implements EntityBlock {
     private static final VoxelShape SHAPE = Block.box(0, 0, 0, 16, 2, 16);
     // allows expandability
     private final int columns;
+    private final int strips;
 
-    public BreadboardBlock(Properties properties, int columns) {
+    public BreadboardBlock(Properties properties, int columns, int strips) {
         super(properties);
         this.columns = columns;
+        this.strips = strips;
     }
+
+    // get files, size of board and avaliable wiring clamps
+    public int getStrips() {
+        return strips;
+    }
+
     public int getColumns() {
         return columns;
+    }
+
+    // Total rows of holes: 10 per strip, plus 2 rail rows for each pair of rails
+    public int getRowCount() {
+        return strips * 10 + (strips + 1) * 2;
     }
 
     @Override
@@ -41,15 +54,25 @@ public class BreadboardBlock extends Block implements EntityBlock {
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new BreadboardBlockEntity(pos, state);
     }
+
+
+    // this method sucks but its needed
     @Override
-    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos,
-                                               Player player, BlockHitResult hit) {
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
+        // Only the server opens menus, and it needs the server version of the player
         if (!level.isClientSide() && player instanceof ServerPlayer serverPlayer) {
-            serverPlayer.openMenu(new SimpleMenuProvider(
+            serverPlayer.openMenu(
+                    // 1. How to build the server's menu, plus the window title
+                    new SimpleMenuProvider(
                             (id, inventory, p) -> new BreadboardMenu(id, inventory,
-                                    ContainerLevelAccess.create(level, pos), columns),
+                                    ContainerLevelAccess.create(level, pos), columns, strips, pos),
                             this.getName()),
-                    buf -> buf.writeVarInt(columns));
+                    // 2. Extra data sent to the player's game, in this exact order
+                    buf -> {
+                        buf.writeVarInt(columns);
+                        buf.writeVarInt(strips);
+                        buf.writeBlockPos(pos);   // NEW: where this board is
+                    });
         }
         return InteractionResult.SUCCESS;
     }

@@ -2,6 +2,7 @@ package com.gamer.mechatronics.menu;
 
 import com.gamer.mechatronics.Mechatronics;
 import com.gamer.mechatronics.block.BreadboardBlock;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -15,23 +16,36 @@ public class BreadboardMenu extends AbstractContainerMenu {
     // Remembers which breadboard this menu belongs to (server side)
     private final ContainerLevelAccess access;
     private final int columns;
+    private final int strips;
+    private final BlockPos pos;
 
-
-    // Client side: the client doesn't need to know where the board is
+    // Client: read in the SAME ORDER the server wrote: columns, strips, pos
     public BreadboardMenu(int containerId, Inventory playerInventory, RegistryFriendlyByteBuf buf) {
-        this(containerId, playerInventory, ContainerLevelAccess.NULL,buf.readVarInt());
+        this(containerId, playerInventory, ContainerLevelAccess.NULL,
+                buf.readVarInt(), buf.readVarInt(), buf.readBlockPos());
     }
 
-    // Server: knows everything directly
-    public BreadboardMenu(int containerId, Inventory playerInventory, ContainerLevelAccess access, int columns) {
+
+    // Server
+    public BreadboardMenu(int containerId, Inventory playerInventory, ContainerLevelAccess access,
+                          int columns, int strips, BlockPos pos) {
         super(Mechatronics.BREADBOARD_MENU.get(), containerId);
         this.access = access;
         this.columns = columns;
+        this.strips = strips;
+        this.pos = pos;
+    }
+
+    public BlockPos getPos() {
+        return pos;
     }
     public int getColumns() {
         return columns;
     }
 
+    public int getStrips() {
+        return strips;
+    }
 
     // Close the menu if the player walks away or the board is broken
     // Valid while the block is still any breadboard and the player is within 8 blocks

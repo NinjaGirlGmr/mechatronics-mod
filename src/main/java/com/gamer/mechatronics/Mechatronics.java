@@ -74,18 +74,19 @@ public class Mechatronics {
     public static final DeferredRegister<MenuType<?>> MENUS = DeferredRegister.create(Registries.MENU, MODID);
     //bread board (physical)
     // bread board sizes as blocks
-    public static final DeferredBlock<BreadboardBlock> SMALL_BREADBOARD = registerBreadboard("small_breadboard", 15);
-    public static final DeferredBlock<BreadboardBlock> MEDIUM_BREADBOARD = registerBreadboard("medium_breadboard", 30);
-    public static final DeferredBlock<BreadboardBlock> LARGE_BREADBOARD = registerBreadboard("large_breadboard", 60);
+    public static final DeferredBlock<BreadboardBlock> SMALL_BREADBOARD = registerBreadboard("small_breadboard", 15, 1);
+    public static final DeferredBlock<BreadboardBlock> MEDIUM_BREADBOARD = registerBreadboard("medium_breadboard", 30, 1);
+    public static final DeferredBlock<BreadboardBlock> LARGE_BREADBOARD = registerBreadboard("large_breadboard", 30, 2);
+
     // bread board sizes as items
     public static final DeferredItem<BlockItem> SMALL_BREADBOARD_ITEM = ITEMS.registerSimpleBlockItem("small_breadboard", SMALL_BREADBOARD);
     public static final DeferredItem<BlockItem> MEDIUM_BREADBOARD_ITEM = ITEMS.registerSimpleBlockItem("medium_breadboard", MEDIUM_BREADBOARD);
     public static final DeferredItem<BlockItem> LARGE_BREADBOARD_ITEM = ITEMS.registerSimpleBlockItem("large_breadboard", LARGE_BREADBOARD);
 
     // All breadboards share the same properties; only the column count differs
-    private static DeferredBlock<BreadboardBlock> registerBreadboard(String name, int columns) {
+    private static DeferredBlock<BreadboardBlock> registerBreadboard(String name, int columns, int strips) {
         return BLOCKS.registerBlock(name,
-                p -> new BreadboardBlock(p, columns),
+                p -> new BreadboardBlock(p, columns, strips),
                 p -> p.mapColor(MapColor.WOOD).strength(0.5f).noOcclusion());
     }
 

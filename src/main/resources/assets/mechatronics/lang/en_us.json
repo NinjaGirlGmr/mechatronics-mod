@@ -28,7 +28,7 @@
 
   "block.mechatronics.small_breadboard": "Small Breadboard (15)",
   "block.mechatronics.medium_breadboard": "Medium Breadboard (30)",
-  "block.mechatronics.large_breadboard": "Large Breadboard (60)",
+  "block.mechatronics.large_breadboard": "Large Breadboard (2×30)",
   "container.mechatronics.breadboard": "Breadboard",
 
   "mechatronics.configuration.title": "Mechatronics Configs",

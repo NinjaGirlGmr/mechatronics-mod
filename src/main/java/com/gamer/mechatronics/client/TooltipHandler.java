@@ -18,13 +18,16 @@ public class TooltipHandler {
 
     @SubscribeEvent
     public static void onTooltip(ItemTooltipEvent event) {
-        // Is the hovered item one of our LEDs? If so, call it "led"
+
+        // ---- LEDs ----
         if (event.getItemStack().getItem() instanceof LedItem led) {
             event.getToolTip().add(Component.literal("Forward voltage: " + led.getForwardVoltage() + " V")
                     .withStyle(ChatFormatting.GRAY));
             event.getToolTip().add(Component.literal("Max current: " + LedItem.MAX_CURRENT_MA + " mA")
                     .withStyle(ChatFormatting.GRAY));
         }
+
+        // ---- Toggle switch ----
         if (event.getItemStack().getItem() instanceof SwitchItem) {
             event.getToolTip().add(Component.literal("Type: SPST toggle")
                     .withStyle(ChatFormatting.GRAY));
@@ -32,13 +35,29 @@ public class TooltipHandler {
                             + SwitchItem.MAX_CURRENT_MA + " mA")
                     .withStyle(ChatFormatting.GRAY));
         }
+
+        // ---- Breadboards (NEW) ----
+        // Breadboards are blocks, so in your inventory they're a BlockItem.
+        // Check 1: is it a block item? Check 2: is that block a breadboard?
         if (event.getItemStack().getItem() instanceof BlockItem blockItem
                 && blockItem.getBlock() instanceof BreadboardBlock board) {
-            int columns = board.getColumns();
-            event.getToolTip().add(Component.literal("Columns: " + columns)
+
+            int columns = board.getColumns();  // 15 or 30
+            int strips = board.getStrips();    // 1 or 2
+
+            // Each strip has 10 rows; there's one more pair of rails (2 rows each) than strips
+            int rowCount = strips * 10 + (strips + 1) * 2;
+
+            // "30 columns × 2 strips" (says "strip" instead of "strips" when there's only 1)
+            event.getToolTip().add(Component.literal("Size: " + columns + " columns × " + strips
+                            + (strips == 1 ? " strip" : " strips"))
                     .withStyle(ChatFormatting.GRAY));
-            event.getToolTip().add(Component.literal("Tie points: " + columns * 14)
+
+            // Tie points = every hole on the board
+            event.getToolTip().add(Component.literal("Tie points: " + columns * rowCount)
                     .withStyle(ChatFormatting.GRAY));
+
+            // Warning, slightly darker so it reads as a side note
             event.getToolTip().add(Component.literal("Combining boards clears circuits")
                     .withStyle(ChatFormatting.DARK_GRAY));
         }
