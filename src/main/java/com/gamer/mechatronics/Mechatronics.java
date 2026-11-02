@@ -2,6 +2,7 @@ package com.gamer.mechatronics;
 
 import com.gamer.mechatronics.block.*;
 import com.gamer.mechatronics.item.LedItem;
+import com.gamer.mechatronics.item.ResistorItem;
 import com.gamer.mechatronics.item.SwitchItem;
 import com.gamer.mechatronics.menu.BreadboardMenu;
 import net.minecraft.core.component.DataComponentType;
@@ -71,7 +72,7 @@ public class Mechatronics {
 
     // Deffered Register
     public static final DeferredItem<Item> COPPER_WIRE = ITEMS.registerSimpleItem("copper_wire");
-    public static final DeferredItem<Item> RESISTOR =ITEMS.registerSimpleItem("resistor");
+    public static final DeferredItem<ResistorItem> RESISTOR = ITEMS.registerItem("resistor", ResistorItem::new);
     public static final DeferredItem<SwitchItem> TOGGLE_SWITCH = ITEMS.registerItem("toggle_switch", SwitchItem::new);
     // helps set up screen display for bread board
     public static final DeferredRegister<MenuType<?>> MENUS = DeferredRegister.create(Registries.MENU, MODID);
