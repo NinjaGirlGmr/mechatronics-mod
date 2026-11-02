@@ -4,6 +4,8 @@ import com.gamer.mechatronics.block.*;
 import com.gamer.mechatronics.item.LedItem;
 import com.gamer.mechatronics.item.SwitchItem;
 import com.gamer.mechatronics.menu.BreadboardMenu;
+import net.minecraft.core.component.DataComponentType;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.*;
@@ -37,6 +39,7 @@ import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -82,6 +85,15 @@ public class Mechatronics {
     public static final DeferredItem<BlockItem> SMALL_BREADBOARD_ITEM = ITEMS.registerSimpleBlockItem("small_breadboard", SMALL_BREADBOARD);
     public static final DeferredItem<BlockItem> MEDIUM_BREADBOARD_ITEM = ITEMS.registerSimpleBlockItem("medium_breadboard", MEDIUM_BREADBOARD);
     public static final DeferredItem<BlockItem> LARGE_BREADBOARD_ITEM = ITEMS.registerSimpleBlockItem("large_breadboard", LARGE_BREADBOARD);
+
+    public static final DeferredRegister.DataComponents DATA_COMPONENTS =
+            DeferredRegister.createDataComponents(Registries.DATA_COMPONENT_TYPE, MODID);
+
+    // The wires a breadboard item carries (only on boards that had a circuit)
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<List<Wire>>> WIRES =
+            DATA_COMPONENTS.registerComponentType("wires", builder -> builder
+                    .persistent(Wire.CODEC.listOf())                                 // how to SAVE it with the item
+                    .networkSynchronized(Wire.STREAM_CODEC.apply(ByteBufCodecs.list()))); // how to SEND it to players
 
     // All breadboards share the same properties; only the column count differs
     private static DeferredBlock<BreadboardBlock> registerBreadboard(String name, int columns, int strips) {
@@ -154,6 +166,8 @@ public class Mechatronics {
         // bread board ui interegration
         BLOCK_ENTITY_TYPES.register(modEventBus);
         MENUS.register(modEventBus);
+
+        DATA_COMPONENTS.register(modEventBus);
 
         // Register ourselves for server and other game events we are interested in.
         // Note that this is necessary if and only if we want *this* class (Mechatronics) to respond directly to events.

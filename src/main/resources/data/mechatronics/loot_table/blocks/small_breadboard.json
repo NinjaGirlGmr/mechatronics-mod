@@ -6,13 +6,18 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "mechatronics:small_breadboard"
+          "name": "mechatronics:small_breadboard",
+          "functions": [
+            {
+              "function": "minecraft:copy_components",
+              "source": "block_entity",
+              "include": ["mechatronics:wires"]
+            }
+          ]
         }
       ],
       "conditions": [
-        {
-          "condition": "minecraft:survives_explosion"
-        }
+        { "condition": "minecraft:survives_explosion" }
       ]
     }
   ]

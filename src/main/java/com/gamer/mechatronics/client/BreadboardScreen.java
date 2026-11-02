@@ -5,6 +5,7 @@ import com.gamer.mechatronics.block.BreadboardBlockEntity;                 // th
 import com.gamer.mechatronics.block.Wire;                                  // one wire: two holes + a color
 import com.gamer.mechatronics.menu.BreadboardMenu;                         // our menu (holds columns, strips, pos)
 import com.gamer.mechatronics.network.AddWirePayload;                      // the packet that asks the server to add a wire
+import com.gamer.mechatronics.network.RemoveWirePayload;                   // the packet that asks the server to remove a wire
 import net.minecraft.client.gui.GuiGraphicsExtractor;                      // the "paintbrush" for drawing on screen
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen; // vanilla's base class for menu windows
 import net.minecraft.client.input.MouseButtonEvent;                        // a mouse click: where, and which button
@@ -18,7 +19,8 @@ import java.util.List;       // the general "list" type
 
 /**
  * The breadboard window: draws the board, its holes, a highlight under the mouse,
- * draws the board's wires, and lets the player pick two holes to make a new wire.
+ * draws the board's wires, lets the player pick two holes to make a new wire,
+ * and right-click a wire to remove it.
  * "extends AbstractContainerScreen<BreadboardMenu>" means: this is a menu window,
  * and the menu it belongs to is a BreadboardMenu.
  */
@@ -52,6 +54,8 @@ public class BreadboardScreen extends AbstractContainerScreen<BreadboardMenu> {
     private static final int TEXT = 0xFF404040;          // dark gray text, like vanilla titles
     private static final int COPPER = 0xFFC46E40;        // bare copper wire
     private static final int PREVIEW = 0x99C46E40;       // see-through copper: the wire you're about to place (99 = partly transparent)
+    private static final int WIRE_HOVER = 0xFFE04040;    // red: the wire under the mouse, which a right-click would remove
+    private static final double WIRE_GRAB = 3.0;         // how close (in pixels) the mouse must be to a wire to "touch" it
 
     // =====================================================================
     // SMALL DATA TYPES
@@ -249,6 +253,46 @@ public class BreadboardScreen extends AbstractContainerScreen<BreadboardMenu> {
     }
 
     /**
+     * How far a point (px, py) is from the line segment between (x0, y0) and (x1, y1).
+     * Used to tell if the mouse is "touching" a wire.
+     *
+     * The idea: slide along the wire to find the spot closest to the mouse.
+     *   t = 0 means the start of the wire, t = 1 means the end, 0.5 the middle.
+     *   The formula for t "projects" the mouse onto the wire's direction.
+     *   Clamping t between 0 and 1 keeps the closest spot ON the wire, not past its ends.
+     * Then measure the straight distance from the mouse to that spot.
+     */
+    private static double distanceToSegment(double px, double py, double x0, double y0, double x1, double y1) {
+        double dx = x1 - x0, dy = y1 - y0;                    // the wire's direction
+        double lengthSquared = dx * dx + dy * dy;             // the wire's length, squared
+        if (lengthSquared == 0) return Math.hypot(px - x0, py - y0); // a zero-length wire is just a point
+
+        double t = ((px - x0) * dx + (py - y0) * dy) / lengthSquared; // how far along the wire the closest spot is
+        t = Math.max(0, Math.min(1, t));                       // keep it between the two ends
+
+        double closestX = x0 + t * dx;                         // the closest spot on the wire
+        double closestY = y0 + t * dy;
+        return Math.hypot(px - closestX, py - closestY);       // hypot = Pythagoras: sqrt(a² + b²)
+    }
+
+    /**
+     * Which wire the mouse is touching, or null if none.
+     * Checks from the LAST wire to the first, because later wires are drawn on top:
+     * if two wires overlap, you grab the one you can see.
+     */
+    private Wire wireAt(double mouseX, double mouseY) {
+        List<Wire> wires = boardWires();
+        for (int i = wires.size() - 1; i >= 0; i--) {          // count backwards
+            Wire wire = wires.get(i);
+            double distance = distanceToSegment(mouseX, mouseY,
+                    centerX(wire.startCol()), centerY(wire.startRow()),
+                    centerX(wire.endCol()), centerY(wire.endRow()));
+            if (distance <= WIRE_GRAB) return wire;            // close enough: this is the one
+        }
+        return null;
+    }
+
+    /**
      * Draws a straight line, 2 pixels thick, from (x0, y0) to (x1, y1).
      * Minecraft's GUI has no "draw a line" tool, so we make one:
      * take enough small steps along the line, and draw a 2x2 square at each step.
@@ -278,10 +322,21 @@ public class BreadboardScreen extends AbstractContainerScreen<BreadboardMenu> {
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
         // event.button(): 0 = left mouse button, 1 = right mouse button
 
-        // ---- Right-click anywhere while making a wire: cancel it ----
-        if (event.button() == 1 && wireStart != null) {
-            wireStart = null; // forget the start hole
-            return true;
+        // ---- Right-click ----
+        if (event.button() == 1) {
+            // While making a wire: cancel it
+            if (wireStart != null) {
+                wireStart = null; // forget the start hole
+                return true;
+            }
+            // Otherwise: if the mouse is on a wire, ask the server to remove it.
+            // We send the wire itself (not its position in the list), so the server
+            // removes exactly this wire even if the list changed in the meantime.
+            Wire touched = wireAt(event.x(), event.y());
+            if (touched != null) {
+                ClientPacketDistributor.sendToServer(new RemoveWirePayload(menu.getPos(), touched));
+                return true;
+            }
         }
 
         // ---- Left-click on a hole ----
@@ -382,12 +437,16 @@ public class BreadboardScreen extends AbstractContainerScreen<BreadboardMenu> {
         }
 
         // ---- Layer 7: placed wires ----
-        // Drawn AFTER the holes, so wires sit on top of the board like real jumper wires
+        // Drawn AFTER the holes, so wires sit on top of the board like real jumper wires.
+        // When you're NOT placing a wire, the wire under the mouse turns red:
+        // that's the one a right-click would remove.
+        Wire touched = (wireStart == null) ? wireAt(mouseX, mouseY) : null;
         for (Wire wire : boardWires()) {
+            int color = wire.equals(touched) ? WIRE_HOVER : wireColor(wire);
             drawLine(g,
                     centerX(wire.startCol()), centerY(wire.startRow()),
                     centerX(wire.endCol()), centerY(wire.endRow()),
-                    wireColor(wire));
+                    color);
         }
 
         // ---- Layer 8: preview of the wire you're about to place ----

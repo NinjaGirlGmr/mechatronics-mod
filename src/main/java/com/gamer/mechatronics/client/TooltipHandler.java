@@ -2,6 +2,7 @@ package com.gamer.mechatronics.client;
 
 import com.gamer.mechatronics.Mechatronics;
 import com.gamer.mechatronics.block.BreadboardBlock;
+import com.gamer.mechatronics.block.Wire;
 import com.gamer.mechatronics.item.LedItem;
 import com.gamer.mechatronics.item.SwitchItem;
 import net.minecraft.ChatFormatting;
@@ -11,6 +12,8 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
+
+import java.util.List;
 
 // Adds electrical info to our parts' tooltips. Client only: servers don't draw tooltips.
 @EventBusSubscriber(modid = Mechatronics.MODID, value = Dist.CLIENT)
@@ -60,6 +63,13 @@ public class TooltipHandler {
             // Warning, slightly darker so it reads as a side note
             event.getToolTip().add(Component.literal("Combining boards clears circuits")
                     .withStyle(ChatFormatting.DARK_GRAY));
+
+            // If this board carries a circuit, say how big it is
+            List<Wire> wires = event.getItemStack().get(Mechatronics.WIRES.get());
+            if (wires != null) {
+                event.getToolTip().add(Component.literal("Circuit: " + wires.size() + " wires")
+                        .withStyle(ChatFormatting.GOLD));
+            }
         }
     }
 }

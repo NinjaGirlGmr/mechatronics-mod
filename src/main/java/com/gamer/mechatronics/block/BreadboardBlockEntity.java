@@ -3,6 +3,8 @@ package com.gamer.mechatronics.block;
 import com.gamer.mechatronics.Mechatronics;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponentGetter;
+import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
@@ -27,9 +29,19 @@ public class BreadboardBlockEntity extends BlockEntity {
 
     public void addWire(Wire wire) {
         wires.add(wire);
-        setChanged();  // remember to save
-        // NEW: on the server, tell every nearby player's game that this board changed.
-        // That triggers getUpdatePacket() below, which sends them the new data.
+        changed();
+    }
+
+    // Removes one wire that matches exactly. Returns true if it was found and removed.
+    public boolean removeWire(Wire wire) {
+        boolean removed = wires.remove(wire);
+        if (removed) changed();
+        return removed;
+    }
+
+    // Mark for saving AND tell nearby players' games to redraw this board
+    private void changed() {
+        setChanged();
         if (level != null && !level.isClientSide()) {
             level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_CLIENTS);
         }
@@ -63,5 +75,25 @@ public class BreadboardBlockEntity extends BlockEntity {
     @Override
     public Packet<ClientGamePacketListener> getUpdatePacket() {
         return ClientboundBlockEntityDataPacket.create(this);
+    }
+
+    // Breaking: put this board's wires on the dropped item
+    @Override
+    protected void collectImplicitComponents(DataComponentMap.Builder components) {
+        super.collectImplicitComponents(components);
+        if (!wires.isEmpty()) {
+            components.set(Mechatronics.WIRES.get(), List.copyOf(wires));
+        }
+    }
+
+    // Placing: if the item had wires, load them onto this board
+    @Override
+    protected void applyImplicitComponents(DataComponentGetter components) {
+        super.applyImplicitComponents(components);
+        List<Wire> saved = components.get(Mechatronics.WIRES.get());
+        if (saved != null) {
+            wires.clear();
+            wires.addAll(saved);
+        }
     }
 }
